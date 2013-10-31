@@ -1,3 +1,19 @@
+"""
+a3m and a2m input for BioPython
+
+This registers new iterators that can be used for reading sequences and MSAs with Bio.SeqIO and Bio.AlignIO.
+
+To use, simply import this module in your project and then use e.g. Bio.AlignIO.parse using any of these new formats:
+
+    a3m         Regular A3M format
+    a2m         Regular A2M format
+
+    a3m-nogaps  A3M format, ignoring all insert states
+    a2m-nogaps  A2M format, ignoring all insert states
+
+See the demo at the bottom of the file for details
+"""
+
 import Bio.SeqIO
 from Bio.SeqIO.FastaIO import SimpleFastaParser, FastaIterator
 from Bio.Alphabet import single_letter_alphabet
