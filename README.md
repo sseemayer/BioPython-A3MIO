@@ -6,10 +6,10 @@ This module enables BioPython to parse the Soeding lab's custom HH-suite alignme
 
 Simply `import A3MIO` in addition to your BioPython modules. This creates support for the following new formats in both `SeqIO` and `AlignIO` packages:
 
-	* `a3m` - A3Ms with insertions
-	* `a3m-nogaps` A3Ms that ignore insertions w.r.t. query sequence
-	* `a2m` - A2Ms with insertions
-	* `a2m-nogaps` A2Ms that ignore insertions w.r.t. query sequence
+ * `a3m` - A3Ms with insertions
+ * `a3m-nogaps` A3Ms that ignore insertions w.r.t. query sequence
+ * `a2m` - A2Ms with insertions
+ * `a2m-nogaps` A2Ms that ignore insertions w.r.t. query sequence
 
 
 Example:
