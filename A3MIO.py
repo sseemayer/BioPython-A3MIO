@@ -23,6 +23,12 @@ from Bio.SeqRecord import SeqRecord
 import collections
 import re
 
+try:
+    import itertools
+    from itertools import izip as zip
+except ImportError:
+    pass
+
 def pad(x, l, pad_char="-"):
     """Pad x with pad_char characters until it has length l"""
     return x + pad_char * (l - len(x))
@@ -58,6 +64,39 @@ def insert_gaps(sequences):
     )
 
 
+def SimpleA2MA3MParser(handle, format='a3m', remove_inserts=False):
+    """Simple A3M/A2M parser that returns tuples of title and sequence"""
+
+    re_insert = re.compile(r'[a-z.]')
+
+
+    # piggyback on the fasta parser for splitting file into title and sequence
+    parsed = collections.OrderedDict(SimpleFastaParser(handle))
+
+    titles = parsed.keys()
+    sequences = parsed.values()
+
+    if format == 'a3m' and not remove_inserts:
+        sequences = insert_gaps(sequences)
+
+    elif format == 'a2m' and not remove_inserts:
+        sequences = (
+            seq.replace(".", "-")
+            for seq in sequences
+        )
+
+    elif remove_inserts:
+        sequences = (
+            re_insert.sub('', seq)
+            for seq in sequences
+        )
+
+    else:
+        raise ValueError("Unknown format: {0}".format(format))
+
+    return zip(titles, sequences)
+
+
 def A2MA3MIterator(format='a3m', remove_inserts=False):
     """Create a SeqIO-style iterator from parameters
 
@@ -78,37 +117,10 @@ def A2MA3MIterator(format='a3m', remove_inserts=False):
                            description, and the first word as the id and name.
         """
 
-        re_insert = re.compile(r'[a-z.]')
-
         if title2ids is None:
             title2ids = lambda t: (t.split(None, 1)[0], t.split(None, 1)[0], t)
 
-
-        # piggyback on the fasta parser for splitting file into title and sequence
-        parsed = collections.OrderedDict(SimpleFastaParser(handle))
-
-        titles = parsed.keys()
-        sequences = parsed.values()
-
-        if format == 'a3m' and not remove_inserts:
-            sequences = insert_gaps(sequences)
-
-        elif format == 'a2m' and not remove_inserts:
-            sequences = (
-                seq.replace(".", "-")
-                for seq in sequences
-            )
-
-        elif remove_inserts:
-            sequences = (
-                re_insert.sub('', seq)
-                for seq in sequences
-            )
-
-        else:
-            raise ValueError("Unknown format: {0}".format(format))
-
-        for title, seq in zip(titles, sequences):
+        for title, seq in SimpleA2MA3MParser(handle, format, remove_inserts):
 
             id, name, description = title2ids(title)
             yield SeqRecord(Seq(seq, alphabet), id=id, name=name, description=description)
