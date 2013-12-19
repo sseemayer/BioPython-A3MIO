@@ -2,6 +2,10 @@
 
 This module enables BioPython to parse the Soeding lab's custom HH-suite alignment formats A3M and A2M. The goal of the module is to replicate the results of the reformat.pl included in the HH-suite as faithfully as possible
 
+## Installation
+
+    pip install A3MIO
+
 ## Usage
 
 Simply `import A3MIO` in addition to your BioPython modules. This creates support for the following new formats in both `SeqIO` and `AlignIO` packages:
