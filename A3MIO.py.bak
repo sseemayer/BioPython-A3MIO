@@ -25,7 +25,7 @@ import re
 
 try:
     import itertools
-    
+    from itertools import izip as zip
 except ImportError:
     pass
 
@@ -73,8 +73,8 @@ def SimpleA2MA3MParser(handle, format='a3m', remove_inserts=False):
     # piggyback on the fasta parser for splitting file into title and sequence
     parsed = collections.OrderedDict(SimpleFastaParser(handle))
 
-    titles = list(parsed.keys())
-    sequences = list(parsed.values())
+    titles = parsed.keys()
+    sequences = parsed.values()
 
     if format == 'a3m' and not remove_inserts:
         sequences = insert_gaps(sequences)
@@ -94,7 +94,7 @@ def SimpleA2MA3MParser(handle, format='a3m', remove_inserts=False):
     else:
         raise ValueError("Unknown format: {0}".format(format))
 
-    return list(zip(titles, sequences))
+    return zip(titles, sequences)
 
 
 def A2MA3MIterator(format='a3m', remove_inserts=False):
