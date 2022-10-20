@@ -16,7 +16,6 @@ See the demo at the bottom of the file for details
 
 import Bio.SeqIO
 from Bio.SeqIO.FastaIO import SimpleFastaParser, FastaIterator
-from Bio.Alphabet import single_letter_alphabet
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 
@@ -64,14 +63,14 @@ def insert_gaps(sequences):
     )
 
 
-def SimpleA2MA3MParser(handle, format='a3m', remove_inserts=False):
+def SimpleA2MA3MParser(filename, format='a3m', remove_inserts=False):
     """Simple A3M/A2M parser that returns tuples of title and sequence"""
 
     re_insert = re.compile(r'[a-z.]')
 
-
     # piggyback on the fasta parser for splitting file into title and sequence
-    parsed = collections.OrderedDict(SimpleFastaParser(handle))
+    with open(filename, "r") as handle:
+        parsed = collections.OrderedDict(SimpleFastaParser(handle))
 
     titles = list(parsed.keys())
     sequences = list(parsed.values())
@@ -105,12 +104,11 @@ def A2MA3MIterator(format='a3m', remove_inserts=False):
         remove_inserts  -- Whether inserts with respect to the query sequence should be removed (default: False)
 
     """
-    def inner_iterator(handle, alphabet=single_letter_alphabet, title2ids=None):
+    def inner_iterator(handle, title2ids=None):
         """Generator function to iterate over a3m records (as SeqRecord objects).
 
         Arguments:
             handle      -- input file
-            alphabet    -- optional alphabet
             title2ids   -- A function that, when given the title of the FASTA file (without the beginning >),
                            will return the id, name and description (in that order) for the record as a tuple
                            of strings. If this is not given, then the entire title line will be used as the
@@ -123,7 +121,7 @@ def A2MA3MIterator(format='a3m', remove_inserts=False):
         for title, seq in SimpleA2MA3MParser(handle, format, remove_inserts):
 
             id, name, description = title2ids(title)
-            yield SeqRecord(Seq(seq, alphabet), id=id, name=name, description=description)
+            yield SeqRecord(Seq(seq), id=id, name=name, description=description)
 
     return inner_iterator
 
